@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sampleJavaSpringService
+  namespace: sample
+  labels:
+    app: sampleJavaSpringService
+spec:
+  selector:
+    matchLabels:
+      app: sampleJavaSpringService
+  replicas: 1
+  revisionHistoryLimit: 0
+  template:
+    metadata:
+      name: sampleJavaSpringService
+      labels:
+        app: sampleJavaSpringService
+    spec:
+      containers:
+        - name: sampleJavaSpringService
+          image: sampleACRName.azurecr.io/sampleJavaSpringService:latest
+          # No http:// before your URL 
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 8080
+      nodeSelector:
+        app: sampleJavaSpringService
+      restartPolicy: Always
+        
+---
+  
+apiVersion: v1
+kind: Service
+metadata:
+  name: sampleJavaSpringService-service
+  namespace: sample
+spec:
+  selector:
+    app: sampleJavaSpringService
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+  type: ClusterIP
